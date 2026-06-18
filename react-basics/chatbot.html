@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ChatBot</title>
+    <style>
+        body{
+            font-family: Arial;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+        .send-button{
+            background-color: rgb(25, 135, 84);
+            color:white;
+            padding: 12px 20px;
+            margin-left:10px;
+            border:none;
+            border-radius: 10px;
+            font-size:15px;
+            cursor: pointer;
+        }
+
+        .chat-Input{
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-width: 1px;
+            font-size: 15px;
+
+            flex-grow: 1;
+        }
+
+        .chat-input-container{
+            display: flex;
+            margin-bottom: 60px;
+        }
+
+        .app-container{
+            max-width: 600px;
+            margin-left:auto ;
+            margin-right: auto;
+
+            height:100vh;
+            display:flex;
+            flex-direction: column;
+        }
+
+        .chat-message-user{
+            display: flex;
+            justify-content: end;
+            align-items: start;
+        }
+
+        .chat-message-robot{
+            display: flex;
+            align-items: start;
+        }
+
+        .chat-message-text{
+            background-color: rgb(238,238,238);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-right: 10px;
+            margin-left: 10px;
+            margin-bottom: 20px;
+            max-width: 300px;
+        }
+
+        .chat-message-profile{
+            width:45px;
+        }
+
+        .chat-messages-container{
+            flex-grow: 1;
+            margin-top: 20px;
+            overflow: scroll;
+            scrollbar-width: none;
+        }
+    </style>
+  </head>
+  <body>
+    <!--Babel = javascript compiler translate other language into javascript
+    when using react we dont use normal javascript , we use enhanced version of javascript called JSX (javascript XML) it is same as javascript but we can write HTML directly in our code -->
+    <div class="js-container"></div>
+    <script src="react-basics.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+
+    <script src="https://unpkg.com/supersimpledev/chatbot.js"></script>
+
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+
+    <script src="https://unpkg.com/supersimpledev/dayjs.js"></script>
+    <script type="text/babel"> 
+        function ChatInput({chatMessages,setChatMessages}){
+
+            const [inputText , setInputText] = React.useState('');
+            const [isLoading, setIsLoading] = React.useState(false);
+
+            function saveInputText(event){
+                setInputText(event.target.value);  // event.target gives us the html element like <input> and the .value give the value inside that element
+            }
+
+            async function sendMessage(){
+                if (isLoading || inputText === '') {
+                    return;
+                }
+
+                // Set isLoading to true at the start, and set it to
+                // false after everything is done.
+                setIsLoading(true);
+                const newChatMessages = [
+                    ...chatMessages,       // (...   <--- this is spread operator, it takes the value in an array and copies them into a new array  )
+                    {
+                        message: inputText,
+                        sender: 'user',
+                        id: crypto.randomUUID()
+                    }
+                ]
+
+                setChatMessages(newChatMessages);
+
+                const response= await Chatbot.getResponseAsync(inputText);
+                setChatMessages([
+                    ...newChatMessages,       // (...   <--- this is spread operator, it takes the value in an array and copies them into a new array  )
+                    {
+                        message: response,
+                        sender: 'robot',
+                        id: crypto.randomUUID()
+                    }
+                ]);
+
+                setInputText('');
+
+                setIsLoading(false);
+            }
+
+            function enterKey(event){
+                if(event.key === 'Enter'){
+                    sendMessage();
+                }
+                else if(event.key === 'Escape'){
+                    setInputText('');
+                }
+            }
+
+
+
+            return (
+                <div className="chat-input-container">
+                    <input 
+                        placeholder="Send a message to ChatBot" 
+                        size="30" 
+                        onChange={saveInputText}                      // onChange runs a function when we change the text inside an <input>   it will also give one parameter 
+                        value={inputText}                              // value - lets us change the text inside this <input>
+                        onKeyDown={enterKey}
+                        className ="chat-Input"
+                    />
+                                                              
+                    <button
+                        onClick={sendMessage}
+                        className="send-button"
+                    >Send</button>
+                </div>
+            );
+        }
+        
+        
+        function ChatMessage({message,sender}){ // shortcut for below lines
+            //const message =props.message;
+            //const sender = props.sender;
+
+            //const { message , sender } = props;    shortcut
+
+            /* if(sender === 'robot'){
+                return(
+                    <div>
+                        <img src="user.png" width="50" />
+                        {message}
+                    </div>
+                );
+            }
+            
+            shortcut below */
+         
+
+            //here AND works as an if statement if sender = to robot then it will put on the robot image next to it 
+            
+
+            return (
+                <div className ={
+                        sender === 'user' 
+                            ? 'chat-message-user' 
+                            : 'chat-message-robot'
+                    }>
+                    {sender === 'robot' && <img src="robot.png" className="chat-message-profile" />} 
+                    <div className= "chat-message-text"> 
+                        {message}
+                    </div>
+                    {sender ==='user' && <img src="user.png" className="chat-message-profile" />}
+                </div>
+            );
+        }
+
+        function ChatMessages({chatMessages}){
+            const chatMessagesRef =React.useRef(null);
+
+            React.useEffect(()=>{
+                const containerElem =chatMessagesRef.current;
+                if( containerElem){
+                    containerElem.scrollTop = containerElem.scrollHeight;
+                }
+            }, [chatMessages]);
+            return (
+                <div className="chat-messages-container"
+                ref ={chatMessagesRef}>
+
+                    {chatMessages.map((chatMessage) =>{
+                        return (
+                            <ChatMessage
+                                message = {chatMessage.message}
+                                sender = {chatMessage.sender}
+                                key= {chatMessage.id}
+                            />
+                        );
+                    })}
+                </div>
+            )
+        }
+
+
+
+
+        function App(){
+            const [chatMessages, setChatMessages] = React.useState([{
+                message: 'hello chatbot',
+                sender: 'user',
+                id: 'id1',
+            },{
+                message: 'Hello! How can I help you?',
+                sender: 'robot',
+                id: 'id2',
+            },{
+                message: 'tell me todays date',
+                sender: 'user',
+                id: 'id3',
+            },{
+                message: 'Today is June 10',
+                sender: 'robot',
+                id:'id4',
+            }]);
+            //const [chatMessages, setChatMessages] = array;   shortcut of above line
+            //const setChatMessages = array[1];  shortcut called array destructuring
+
+            return (      
+                <div className="app-container">
+                    
+                    <ChatMessages 
+                        chatMessages = {chatMessages}
+                    />
+                    <ChatInput 
+                        chatMessages = {chatMessages}
+                        setChatMessages = {setChatMessages}
+                    />
+                    
+                </div>
+            );
+        }
+        
+
+
+        const container = document.querySelector('.js-container');
+        ReactDOM.createRoot(container).render(<App />);
+
+    </script>
+  </body>
+</html>

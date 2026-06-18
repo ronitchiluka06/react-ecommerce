@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chatbot</title>
+    <style>
+      .btnOn{
+        background-color:rgb(25, 135, 84);
+        border: none;
+        border-radius: 5px;
+        color: white;
+        padding: 10px 15px;
+        font-size: medium;
+      }
+      .btnOff{
+        background-color: red;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        padding: 10px 15px;
+        font-size: medium;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <!--Babel = javascript compiler translate other language into javascript
+    when using react we dont use normal javascript , we use enhanced version of javascript called JSX (javascript XML) it is same as javascript but we can write HTML directly in our code -->
+    <div class="js-container"></div>
+    <script src="react-basics.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+
+    <script src="https://unpkg.com/supersimpledev/dayjs.js"></script>
+    <script type="text/babel"> 
+
+      function App(){
+
+        const [btnValue,setBtnValue]=React.useState(false);
+        function isButtonOn(){
+          setBtnValue(!btnValue);
+        }
+
+        return (
+          <>
+           <button 
+           className={btnValue? 'btnOn' : 'btnOff'}
+           onClick={isButtonOn}
+           >{btnValue === true ? 'ON': 'OFF'}</button>
+          </>
+        )
+      }
+
+
+      const container = document.querySelector('.js-container');
+      ReactDOM.createRoot(container).render(<App />);
+    </script>
+  </body>
+</html>
