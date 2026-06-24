@@ -1,6 +1,17 @@
 import dayjs from "dayjs";
+import axios from "axios";
 
-export function CartItemDetails({orderProduct}) {
+
+export function CartItemDetails({orderProduct , loadCart}) {
+
+    const addToCart = async () => {
+                    await axios.post('/api/cart-items', {
+                        productId: orderProduct.product.id,
+                        quantity: 1,  
+                    });
+                    await loadCart();
+                };
+
     return (
         <>
             <div className="product-image-container">
@@ -17,9 +28,12 @@ export function CartItemDetails({orderProduct}) {
                 <div className="product-quantity">
                     Quantity: {orderProduct.quantity}
                 </div>
-                <button className="buy-again-button button-primary">
+                <button className="buy-again-button button-primary"
+                onClick={addToCart}>
                     <img className="buy-again-icon" src="images/icons/buy-again.png" />
-                    <span className="buy-again-message">Add to Cart</span>
+                    <span className="buy-again-message">
+                        Add to Cart
+                        </span>
                 </button>
             </div>
         </>

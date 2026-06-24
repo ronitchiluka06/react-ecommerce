@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { formatMoney } from "../../utils/money";
 import { CartItemDetails } from "./CartItemDetails";
 
-export function OrdersGrid({ orders }) {
+export function OrdersGrid({ orders , loadCart}) {
     return (
 
         <div className="orders-grid">
@@ -32,9 +32,10 @@ export function OrdersGrid({ orders }) {
 
                         <div className="order-details-grid">
                             {order.products.map((orderProduct) => {
+                                
                                 return (
                                     <Fragment key={orderProduct.product.id}>
-                                        <CartItemDetails orderProduct={orderProduct} />
+                                        <CartItemDetails orderProduct={orderProduct} loadCart={loadCart} />
 
                                         <div className="product-actions">
                                             <a href="/tracking">

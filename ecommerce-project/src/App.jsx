@@ -8,6 +8,8 @@ import { TrackingPage } from './pages/TrackingPage';
 
 import './App.css'
 
+window.axios = axios;
+
 function App() {
   
   const [cart,setCart]= useState([]);
@@ -28,7 +30,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage cart={cart} loadCart={loadCart}/>}/>
         <Route path="checkout" element={<CheckoutPage cart={cart} loadCart={loadCart}/>}/>
-        <Route path="orders" element={<OrdersPage cart={cart}/>}/>
+        <Route path="orders" element={<OrdersPage cart={cart} loadCart={loadCart}/>}/>
         <Route path="tracking" element={<TrackingPage cart={cart}/>}/>
         
       </Routes>
