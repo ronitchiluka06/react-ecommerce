@@ -34,6 +34,18 @@ export function CartItemDetails({ cartItem, loadCart , selectedDeliveryOption , 
         await loadCart();
     }
 
+    const handleQuantityKeyDown =(event)=>{
+        const keyPressed = event.key;
+
+        if(keyPressed === 'Enter'){
+            updateQuantitys();
+        }
+        else if(keyPressed === 'Escape'){
+            setQuantity(cartItem.quantity);
+            setUpdateQuantity(false);
+        }
+    } 
+
     return (
         <div  className="cart-item-container">
 
@@ -58,6 +70,7 @@ export function CartItemDetails({ cartItem, loadCart , selectedDeliveryOption , 
                                 ?
                                 <input value={quantity} 
                                 onChange={updateQuantityInput} 
+                                onKeyDown={handleQuantityKeyDown}
                                 className="quantity-input" type="text" />
                                 :
                                 <span className="quantity-label">{cartItem.quantity}</span>
